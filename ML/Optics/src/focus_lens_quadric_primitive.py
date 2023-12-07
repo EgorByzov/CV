@@ -71,8 +71,6 @@ def _trace_focus_quads_plane_to_points(n_ref, exit_z, exit_points, use_closest_s
     def_shape = quadric_values.shape
 
     num_rays = rays.shape[0]
-    a = n_ref - 1
-    b2 = a * (n_ref + 1)
 
     x_exit = exit_points[:, :, 0]
     y_exit = exit_points[:, :, 1]
@@ -81,11 +79,7 @@ def _trace_focus_quads_plane_to_points(n_ref, exit_z, exit_points, use_closest_s
     res_illum = np.zeros(def_shape, dtype=quadric_values.dtype)
 
     for i in prange(num_rays):
-        cur_ray = rays[i, :]
-        d2 = (cur_ray[0] - x_exit) ** 2 + (cur_ray[1] - y_exit) ** 2
-        b1 = a * (exit_z + n_ref * quadric_values)
-        b3 = a ** 2 * (exit_z - quadric_values) ** 2
-
+        cur_ray = rays[i, :]        
         t = (-np.sqrt(b2 * d2 + b3) + b1) / b2
 
         if use_closest_surface:
@@ -107,9 +101,7 @@ def _trace_focus_quads_plane_to_points_batch(n_ref, exit_z, exit_points, use_clo
     batch_size = def_shape[0]
 
     num_rays = rays.shape[0]
-    a = n_ref - 1
-    b2 = a * (n_ref + 1)
-
+    
     x_exit = exit_points[:, :, 0]
     y_exit = exit_points[:, :, 1]
 
@@ -119,12 +111,8 @@ def _trace_focus_quads_plane_to_points_batch(n_ref, exit_z, exit_points, use_clo
     for k in prange(batch_size):
         for i in prange(num_rays):
             cur_ray = rays[i, :]
-            d2 = (cur_ray[0] - x_exit) ** 2 + (cur_ray[1] - y_exit) ** 2
-
+    
             cur_quads = quadric_values[k]
-
-            b1 = a * (exit_z + n_ref * cur_quads)
-            b3 = a ** 2 * (exit_z - cur_quads) ** 2
 
             t = (-np.sqrt(b2 * d2 + b3) + b1) / b2
 
